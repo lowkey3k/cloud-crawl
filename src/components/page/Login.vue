@@ -4,7 +4,7 @@
             <div class="ms-title">后台管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+                    <el-input  v-model="param.username" placeholder="username">
                         <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
@@ -35,8 +35,8 @@ export default {
                 username: 'admin',
                 password: '123123',
             },
-            rules: {
-                username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+            rules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
+                username: [{ required: true, message: '请输入用户名', trigger: 'blur' },{ min: 5 }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
             },
         };
@@ -55,7 +55,7 @@ export default {
                 }
             });
         },
-    },
+    }
 };
 </script>
 
