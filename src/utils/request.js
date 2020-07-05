@@ -1,34 +1,52 @@
 import axios from 'axios';
+import { Message } from 'element-ui';
 
 const service = axios.create({
     // process.env.NODE_ENV === 'development' 来判断是否开发环境
     // easy-mock服务挂了，暂时不使用了
-    // baseURL: 'https://www.easy-mock.com/mock/592501a391470c0ac1fab128',
-    timeout: 5000
+    baseURL: 'http://localhost:8080/cloud_rbac',
+    timeout: 5000,
+    withCredentials: true
 });
 
-service.interceptors.request.use(
-    config => {
-        return config;
-    },
-    error => {
-        console.log(error);
-        return Promise.reject();
-    }
-);
 
-service.interceptors.response.use(
-    response => {
-        if (response.status === 200) {
-            return response.data;
-        } else {
-            Promise.reject();
+service
+    .interceptors
+    .request
+    .use(
+        config => {
+            //发送请求之前处理
+            return config;
+        },
+        error => {
+            console.log(error);
+            //对请求错误做些什么
+            return Promise.reject();
         }
-    },
-    error => {
-        console.log(error);
-        return Promise.reject();
-    }
-);
+    );
+
+service
+    .interceptors
+    .response
+    .use(
+        response => {
+            const result=response.data;
+            if (result.code==='-1') {
+                Message.error(result.message);
+                Promise.reject();
+            }
+            //对请求成功做些什么
+            if (response.status === 200) {
+                return response.data;
+            } else {
+                Promise.reject();
+            }
+        },
+        //对请求响应失败做些什么
+        error => {
+            Message.error(error.response.data.message);
+            return Promise.reject();
+        }
+    );
 
 export default service;

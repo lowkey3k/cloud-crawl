@@ -1,20 +1,20 @@
 <template>
-    <!--登陆页面-->
 
-
+    <!--注册页面-->
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">权限管理系统</div>
+            <div class="ms-title">cloud-rbac权限管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+                    <el-input v-model="param.username" placeholder="用户名">
                         <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
+
                 <el-form-item prop="password">
                     <el-input
                             type="password"
-                            placeholder="password"
+                            placeholder="密码（8-20个字符组成，区分大小写）"
                             v-model="param.password"
                             @keyup.enter.native="submitForm()"
                     >
@@ -22,68 +22,75 @@
                     </el-input>
                 </el-form-item>
 
-                <el-checkbox v-model="checked">记住我</el-checkbox>
-                <el-link @click="forgetPassword()" class="forget-password">忘记密码？</el-link>
+                <el-form-item prop="phone">
+                    <el-input v-model="param.phone" placeholder="填写常用手机号">
+                        <el-button slot="prepend" icon="el-icon-lx-phone">中国大陆</el-button>
+                    </el-input>
+                </el-form-item>
 
+                <el-form-item prop="phone">
+                    <el-input v-model="param.captcha" placeholder="验证码">
+                        <el-button class="captcha" @click="getCaptcha()" slot="append">获取验证码</el-button>
+                    </el-input>
+                </el-form-item>
 
-                <div class="login-btn">
-                    <el-button type="primary" @click="submitForm()">登录</el-button>
-                </div>
                 <div class="register-btn">
-                    <el-button type="primary" @click="toRegister()">注册</el-button>
+                    <el-button type="primary" @click="registerSubmit()">注册</el-button>
                 </div>
-                <p class="login-tips"></p>
+                <p class="login-tips" @click="loginSubmit()">有账号，直接登陆</p>
             </el-form>
         </div>
     </div>
 </template>
-<script>
-    import service from '../../utils/request';
 
+<script>
     export default {
         data: function() {
             return {
                 param: {
-                    username: '123456',
-                    password: '123456'
+                    username: '',
+                    password: '',
+                    phone: '',
+                    captcha: ''
                 },
-                checked: false
-                ,
                 rules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
-                    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-                    password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+                    username: [{ required: true, message: '请输入用户名', trigger: 'blur' }, { min: 5 }],
+                    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+                    phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }, { min: 11, max: 11 }]
                 }
             };
         },
         methods: {
-            submitForm() {
+            registerSubmit() {
                 this.$refs.login.validate(valid => {
-                    var vm = this;
                     if (valid) {
-                        service.get('/auth/login?password=' + this.param.password + '&username=' + this.param.username)
-                            .then(function(result) {
-                                if (result.code === '0') {
-                                    localStorage.setItem('current_username', vm.param.username);
-                                    vm.$router.push('/');
-                                }
-                            });
 
+                        this.$message.success('登录成功');
+                        localStorage.setItem('ms_username', this.param.username);
+                        this.$router.push('/');
                     } else {
-                        vm.$message.error('请输入账号和密码');
+                        this.$message.error('请输入账号和密码');
+                        console.log('error submit!!');
                         return false;
                     }
                 });
             },
-            toRegister() {
-                this.$router.push('/register');
+            getCaptcha() {
+
+                //获取验证码
+                this.$alert("123456");
+
             },
-            forgetPassword() {
+            loginSubmit() {
+
+                //跳转登陆页
+                this.$router.push("/login");
 
             }
+
         }
     };
 </script>
-
 
 <style scoped>
     .login-wrap {
@@ -99,7 +106,7 @@
         line-height: 80px;
         text-align: center;
         font-size: 20px;
-        color: white;
+        color: #fff;
         border-bottom: 1px solid #ddd;
     }
 
@@ -122,35 +129,37 @@
         text-align: center;
     }
 
-    .login-btn button {
-        width: 40%;
-        height: 36px;
-        margin-bottom: 10px;
-        float: left;
-    }
-
     .register-btn {
         text-align: center;
     }
 
     .register-btn button {
+        width: 100%;
+        height: 36px;
+        margin-bottom: 10px;
+        float: left;
+    }
+
+    .login-btn button {
         width: 40%;
         height: 36px;
         margin-bottom: 10px;
         float: right;
         background-color: white;
-        color: rgba(0, 0, 0, 0.75);
+        color: rgba(60, 63, 65, 0.73);
     }
 
     .login-tips {
         font-size: 12px;
         line-height: 30px;
-        color: #fff;
         height: 50px;
-
+        float: right;
+        cursor: pointer;
+        color: #20a0ff;
     }
 
-    .forget-password {
-        float: right;
+    .captcha {
+        color: #20a0ff;
+        background-color: #00d1b2;
     }
 </style>
