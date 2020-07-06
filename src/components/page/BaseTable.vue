@@ -102,11 +102,12 @@
 </template>
 
 <script>
-import { fetchData } from '../../api/index';
+import { fetchData } from '../../api/user';
 export default {
     name: 'basetable',
     data() {
         return {
+            //查询参数
             query: {
                 address: '',
                 name: '',

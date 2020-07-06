@@ -14,10 +14,16 @@ export default new Router({
             component: () => import(/* webpackChunkName: "home" */ '../components/common/Home.vue'),
             meta: { title: '自述文件' },
             children: [
+
                 {
                     path: '/dashboard',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
                     meta: { title: '系统首页' }
+                },
+                {
+                    path: '/user',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/User.vue'),
+                    meta: { title: '用户管理' }
                 },
                 {
                     path: '/icon',
@@ -112,7 +118,7 @@ export default new Router({
         {
             path: '/register',
             component: () => import(/* webpackChunkName: "login" */ '../components/page/Register.vue'),
-            meta: { title: '登录' }
+            meta: { title: '注册' }
         },
         {
             path: '*',
