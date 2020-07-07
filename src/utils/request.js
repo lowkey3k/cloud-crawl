@@ -9,7 +9,6 @@ const service = axios.create({
     withCredentials: true
 });
 
-
 service
     .interceptors
     .request
@@ -44,7 +43,11 @@ service
         },
         //对请求响应失败做些什么
         error => {
-            Message.error(error.response.data.message);
+            if (error.response==null){
+                Message.error("服务异常！");
+            } else {
+                Message.error(error.response.data.message);
+            }
             return Promise.reject();
         }
     );

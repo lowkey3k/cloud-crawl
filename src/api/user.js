@@ -7,3 +7,12 @@ export const fetchData = query => {
         params: query
     });
 };
+
+
+export const login = query => {
+    return request({
+        url: '/auth/login',
+        method: 'get',
+        params: query
+    });
+};

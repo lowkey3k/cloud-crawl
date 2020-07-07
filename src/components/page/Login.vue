@@ -39,6 +39,7 @@
 </template>
 <script>
     import service from '../../utils/request';
+    import { login } from '../../api/user';
 
     export default {
         data: function() {
@@ -60,13 +61,14 @@
                 this.$refs.login.validate(valid => {
                     var vm = this;
                     if (valid) {
-                        service.get('/auth/login?password=' + this.param.password + '&username=' + this.param.username)
+                        service.post('/up/login?password=' + this.param.password + '&username=' + this.param.username)
                             .then(function(result) {
                                 if (result.code === '0') {
                                     localStorage.setItem('current_username', vm.param.username);
                                     vm.$router.push('/');
                                 }
                             });
+                        // login(this.param);
 
                     } else {
                         vm.$message.error('请输入账号和密码');
