@@ -41,24 +41,32 @@
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
                 <el-table-column prop="name" label="姓名"></el-table-column>
+                <el-table-column prop="username" label="用户名"></el-table-column>
+
                 <el-table-column prop="age" label="年龄"></el-table-column>
                 <el-table-column prop="sex" label="性别"></el-table-column>
 
-                <el-table-column prop="username" label="用户名"></el-table-column>
                 <el-table-column prop="identify" label="身份证"></el-table-column>
 
                 <el-table-column prop="phone" label="手机号"></el-table-column>
                 <el-table-column prop="email" label="邮箱"></el-table-column>
+
                 <!--<el-table-column label="手机号">-->
-                <!--<template slot-scope="scope">￥{{scope.row.money}}</template>-->
+                <!--<template slot-scope="scope">￥{{scope.row.avatar}}</template>-->
                 <!--</el-table-column>-->
+
                 <el-table-column label="头像(查看大图)" align="center">
                     <template slot-scope="scope">
                         <el-image
                                 class="table-td-thumb"
-                                :src="scope.row.thumb"
-                                :preview-src-list="[scope.row.thumb]"
-                        ></el-image>
+                                :src="scope.row.avatar"
+                                :preview-src-list="[scope.row.avatar]">
+
+                        </el-image>
+                        <!--<img src="static/img/img.146655c9.jpg">-->
+                        <!--<img src="../../assets/img/img.jpg" />-->
+
+
                     </template>
                 </el-table-column>
 
@@ -86,6 +94,7 @@
                                 @click="handleDelete(scope.$index, scope.row)"
                         >删除
                         </el-button>
+                        <image src="../../assets/logo.png"></image>
                     </template>
                 </el-table-column>
             </el-table>
