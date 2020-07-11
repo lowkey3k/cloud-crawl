@@ -16,3 +16,20 @@ export const login = query => {
         params: query
     });
 };
+
+
+
+export const edit = data => {
+    return request({
+        url: '/user/update',
+        method: 'put',
+        data: data
+    });
+};
+
+export const deleteUser = query => {
+    return request({
+        url: '/user/'+query.id,
+        method: 'delete'
+    });
+};

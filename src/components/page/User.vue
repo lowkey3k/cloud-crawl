@@ -26,7 +26,8 @@
                 <el-input v-model="query.f_like_email" placeholder="邮箱" class="handle-input mr10"></el-input>
                 <el-input v-model="query.f_eq_sex" placeholder="性别" class="handle-input mr10"></el-input>
 
-                <el-button style="float: right" type="primary" icon="el-icon-search"  @click="handleSearch">搜索</el-button>
+                <el-button style="float: right" type="primary" icon="el-icon-search" @click="handleSearch">搜索
+                </el-button>
             </div>
 
 
@@ -44,16 +45,14 @@
                 <el-table-column prop="username" label="用户名"></el-table-column>
 
                 <el-table-column prop="age" label="年龄"></el-table-column>
-                <el-table-column prop="sex" label="性别"></el-table-column>
+                <el-table-column prop="sexStr" label="性别" :formatter="sexFormat"></el-table-column>
 
                 <el-table-column prop="identify" label="身份证"></el-table-column>
 
                 <el-table-column prop="phone" label="手机号"></el-table-column>
                 <el-table-column prop="email" label="邮箱"></el-table-column>
 
-                <!--<el-table-column label="手机号">-->
-                <!--<template slot-scope="scope">￥{{scope.row.avatar}}</template>-->
-                <!--</el-table-column>-->
+                <el-table-column prop="roles" label="角色" :formatter="roleFormat"></el-table-column>
 
                 <el-table-column label="头像(查看大图)" align="center">
                     <template slot-scope="scope">
@@ -61,22 +60,12 @@
                                 class="table-td-thumb"
                                 :src="scope.row.avatar"
                                 :preview-src-list="[scope.row.avatar]">
-
                         </el-image>
-                        <!--<img src="static/img/img.146655c9.jpg">-->
-                        <!--<img src="../../assets/img/img.jpg" />-->
-
-
                     </template>
                 </el-table-column>
 
-                <!--<el-table-column label="状态" align="center">-->
-                <!--<template slot-scope="scope">-->
-                <!--<el-tag-->
-                <!--:type="scope.row.state==='成功'?'success':(scope.row.state==='失败'?'danger':'')"-->
-                <!--&gt;{{scope.row.state}}</el-tag>-->
-                <!--</template>-->
-                <!--</el-table-column>-->
+                <el-table-column prop="status" label="状态" :formatter="statusFormat"></el-table-column>
+
 
                 <!--<el-table-column prop="date" label="注册时间"></el-table-column>-->
                 <el-table-column label="操作" width="180" align="center">
@@ -113,11 +102,23 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
             <el-form ref="form" :model="form" label-width="70px">
-                <el-form-item label="用户名">
+                <el-form-item label="姓名">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                <el-form-item label="年龄">
+                    <el-input v-model="form.age"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-input v-model="form.sex"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号">
+                    <el-input v-model="form.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱">
+                    <el-input v-model="form.email"></el-input>
+                </el-form-item>
+                <el-form-item label="身份证">
+                    <el-input v-model="form.identify"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -129,7 +130,7 @@
 </template>
 
 <script>
-    import { fetchData } from '../../api/user';
+    import { edit, fetchData, deleteUser } from '../../api/user';
 
     export default {
         name: 'basetable',
@@ -138,7 +139,7 @@
                 query: {
                     // address: '',
                     name: '',
-                    pageNo: 0,
+                    pageNo: 1,
                     pageSize: 10,
                     f_like_username: '',
                     f_like_identify: '',
@@ -168,6 +169,30 @@
                     this.pageTotal = res.result.total || 50;
                 });
             },
+            sexFormat(row, column) {
+                if (row.sex === 1) {
+                    return '男';
+                } else if (row.sex === 0) {
+                    return '女';
+                }
+                if (row.sex === '男') {
+                    return '男';
+                } else {
+                    return '女';
+                }
+            },
+            statusFormat(row, column) {
+                if (row.status === 1) {
+                    return '有效';
+                } else {
+                    return '无效';
+                }
+            },
+            roleFormat(row, column) {
+                return row.roles.map(function(obj, index) {
+                    return obj.name;
+                }).join(',');
+            },
             // 触发搜索按钮
             handleSearch() {
                 // this.$set(this.query,"pageNo",1);
@@ -181,8 +206,14 @@
                     type: 'warning'
                 })
                     .then(() => {
-                        this.$message.success('删除成功');
-                        this.tableData.splice(index, 1);
+                        let vm=this;
+                        let param = { 'id': row.id };
+                        deleteUser(param).then(function(result) {
+                            if (result.code === '0') {
+                                vm.$message.success('删除成功');
+                                vm.tableData.splice(index, 1);
+                            }
+                        });
                     })
                     .catch(() => {
                     });
@@ -205,13 +236,21 @@
             handleEdit(index, row) {
                 this.idx = index;
                 this.form = row;
+                this.form.sex = this.form.sex === 1 ? '男' : '女';
                 this.editVisible = true;
             },
             // 保存编辑
             saveEdit() {
                 this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx + 1} 行成功`);
                 this.$set(this.tableData, this.idx, this.form);
+                this.form.sex = this.form.sex === '男' ? 1 : 0;
+                let vm = this;
+                edit(this.form).then(function(result) {
+                    if (result.code === '0') {
+                        vm.$message.success(`修改成功`);
+                    }
+                });
+
             },
             // 分页导航
             handlePageChange(val) {

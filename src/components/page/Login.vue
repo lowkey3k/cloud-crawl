@@ -61,7 +61,11 @@
                 this.$refs.login.validate(valid => {
                     var vm = this;
                     if (valid) {
-                        service.post('/up/login?password=' + this.param.password + '&username=' + this.param.username)
+                        let requestUrl='/up/login?password=' + this.param.password + '&username=' + this.param.username;
+                        if (this.checked){
+                            requestUrl=requestUrl+'&remember-me=true'
+                        }
+                        service.post(requestUrl)
                             .then(function(result) {
                                 if (result.code === '0') {
                                     localStorage.setItem('current_username', vm.param.username);
