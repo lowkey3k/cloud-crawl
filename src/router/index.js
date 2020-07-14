@@ -26,6 +26,11 @@ export default new Router({
                     meta: { title: '用户管理' }
                 },
                 {
+                    path: '/userAuth',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/UserAuth.vue'),
+                    meta: { title: '用户授权' }
+                },
+                {
                     path: '/icon',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/Icon.vue'),
                     meta: { title: '自定义图标' }
