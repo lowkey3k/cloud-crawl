@@ -41,6 +41,15 @@
             >
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
+                <el-table-column label="头像(查看大图)" align="center">
+                    <template slot-scope="scope">
+                        <el-image
+                                class="table-td-thumb"
+                                :src="scope.row.avatar"
+                                :preview-src-list="[scope.row.avatar]">
+                        </el-image>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="name" label="姓名"></el-table-column>
                 <el-table-column prop="username" label="用户名"></el-table-column>
 
@@ -54,15 +63,7 @@
 
                 <el-table-column prop="roles" label="角色" :formatter="roleFormat"></el-table-column>
 
-                <el-table-column label="头像(查看大图)" align="center">
-                    <template slot-scope="scope">
-                        <el-image
-                                class="table-td-thumb"
-                                :src="scope.row.avatar"
-                                :preview-src-list="[scope.row.avatar]">
-                        </el-image>
-                    </template>
-                </el-table-column>
+
 
                 <!--<el-table-column  label="状态" :formatter="statusFormat">-->
                 <!--<el-switch-->

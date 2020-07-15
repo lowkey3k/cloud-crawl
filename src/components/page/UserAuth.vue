@@ -9,13 +9,13 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button
-                        type="primary"
-                        icon="el-icon-delete"
-                        class="handle-del mr10"
-                        @click="delAllSelection"
-                >批量删除
-                </el-button>
+                <!--<el-button-->
+                <!--type="primary"-->
+                <!--icon="el-icon-delete"-->
+                <!--class="handle-del mr10"-->
+                <!--@click="delAllSelection"-->
+                <!--&gt;批量删除-->
+                <!--</el-button>-->
                 <!--<el-select v-model="query.address" placeholder="地址" class="handle-select mr10">-->
                 <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
                 <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
@@ -34,24 +34,15 @@
             <el-table
                     :data="tableData"
                     border
-                    class="table"
                     ref="multipleTable"
-                    header-cell-class-name="table-header"
-                    @selection-change="handleSelectionChange"
-            >
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
+                    header-cell-class-name="table-header">
+
+                <!--class="table"-->
+                <!--@selection-change="handleSelectionChange"-->
+
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
                 <el-table-column prop="name" label="姓名"></el-table-column>
                 <el-table-column prop="username" label="用户名"></el-table-column>
-
-                <el-table-column prop="age" label="年龄"></el-table-column>
-                <el-table-column prop="sexStr" label="性别" :formatter="sexFormat"></el-table-column>
-
-                <el-table-column prop="identify" label="身份证"></el-table-column>
-
-                <el-table-column prop="phone" label="手机号"></el-table-column>
-                <el-table-column prop="email" label="邮箱"></el-table-column>
-
                 <el-table-column prop="roles" label="角色" :formatter="roleFormat"></el-table-column>
 
                 <el-table-column label="头像(查看大图)" align="center">
@@ -63,15 +54,6 @@
                         </el-image>
                     </template>
                 </el-table-column>
-
-                <!--<el-table-column  label="状态" :formatter="statusFormat">-->
-                <!--<el-switch-->
-                <!--v-model="status"-->
-                <!--active-color="#13ce66"-->
-                <!--inactive-color="#ff4949">-->
-                <!--</el-switch>-->
-
-                <!--</el-table-column>-->
 
                 <el-table-column label="状态" align="center" width="100">
                     <template slot-scope="scope">
@@ -90,17 +72,17 @@
                     <template slot-scope="scope">
                         <el-button
                                 type="text"
-                                icon="el-icon-edit"
+                                icon="el-icon-circle-plus-outline"
                                 @click="handleEdit(scope.$index, scope.row)"
-                        >编辑
+                        >绑定角色
                         </el-button>
-                        <el-button
-                                type="text"
-                                icon="el-icon-delete"
-                                class="red"
-                                @click="handleDelete(scope.$index, scope.row)"
-                        >删除
-                        </el-button>
+                        <!--<el-button-->
+                        <!--type="text"-->
+                        <!--icon="el-icon-delete"-->
+                        <!--class="red"-->
+                        <!--@click="handleDelete(scope.$index, scope.row)"-->
+                        <!--&gt;删除-->
+                        <!--</el-button>-->
                         <image src="../../assets/logo.png"></image>
                     </template>
                 </el-table-column>
@@ -117,49 +99,68 @@
             </div>
         </div>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="70px">
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="年龄">
-                    <el-input v-model="form.age"></el-input>
-                </el-form-item>
-                <!--<el-form-item label="性别">-->
-                    <!--<el-input v-model="form.sex"></el-input>-->
-                <!--</el-form-item>-->
+        <!--&lt;!&ndash; 编辑弹出框 &ndash;&gt;-->
+        <!--<el-dialog title="编辑" :visible.sync="editVisible" width="30%">-->
+        <!--<el-form ref="form" :model="form" label-width="70px">-->
+        <!--<el-form-item label="姓名">-->
+        <!--<el-input v-model="form.name"></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="年龄">-->
+        <!--<el-input v-model="form.age"></el-input>-->
+        <!--</el-form-item>-->
+        <!--&lt;!&ndash;<el-form-item label="性别">&ndash;&gt;-->
+        <!--&lt;!&ndash;<el-input v-model="form.sex"></el-input>&ndash;&gt;-->
+        <!--&lt;!&ndash;</el-form-item>&ndash;&gt;-->
 
-                <el-form-item label="性别">
-                    <el-radio-group v-model="form.sex">
-                        <el-radio :label="1">男</el-radio>
-                        <el-radio :label="0">女</el-radio>
-                    </el-radio-group>
-                </el-form-item>
+        <!--<el-form-item label="性别">-->
+        <!--<el-radio-group v-model="form.sex">-->
+        <!--<el-radio :label="1">男</el-radio>-->
+        <!--<el-radio :label="0">女</el-radio>-->
+        <!--</el-radio-group>-->
+        <!--</el-form-item>-->
 
 
-                <el-form-item label="手机号">
-                    <el-input v-model="form.phone"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱">
-                    <el-input v-model="form.email"></el-input>
-                </el-form-item>
-                <el-form-item label="身份证">
-                    <el-input v-model="form.identify"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
+        <!--<el-form-item label="手机号">-->
+        <!--<el-input v-model="form.phone"></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="邮箱">-->
+        <!--<el-input v-model="form.email"></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="身份证">-->
+        <!--<el-input v-model="form.identify"></el-input>-->
+        <!--</el-form-item>-->
+        <!--</el-form>-->
+        <!--<span slot="footer" class="dialog-footer">-->
+        <!--<el-button @click="editVisible = false">取 消</el-button>-->
+        <!--<el-button type="primary" @click="saveEdit">确 定</el-button>-->
+        <!--</span>-->
+        <!--</el-dialog>-->
+        <el-dialog title="绑定角色" :visible.sync="bindRoleVisible" width="45%" center>
+            <template>
+                <el-transfer
+                        filterable
+                        :filter-method="filterMethod"
+                        filter-placeholder="请输入角色名称"
+                        v-model="value"
+                        :titles="['角色', '拥有角色']"
+                        :data="data">
+                </el-transfer>
+                <span slot="footer" class="dialog-footer">
+    <el-button @click="bindRoleVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addRole">确 定</el-button>
+  </span>
+            </template>
         </el-dialog>
+
     </div>
 </template>
 
 <script>
-    import { edit, fetchData, deleteUser } from '../../api/user';
+    import { getRoleList,userAddRole } from '../../api/role';
+    import { edit, fetchData } from '../../api/user';
 
     export default {
+
         name: 'basetable',
         data() {
             return {
@@ -178,10 +179,13 @@
                 multipleSelection: [],
                 delList: [],
                 editVisible: false,
+                bindRoleVisible: false,
                 pageTotal: 0,
                 form: {},
                 idx: -1,
-                id: -1
+                id: -1,
+                value: [],
+                data: []
             };
         },
         created() {
@@ -196,24 +200,15 @@
                     this.pageTotal = res.result.total || 50;
                 });
             },
-            sexFormat(row, column) {
-                if (row.sex === 1) {
-                    return '男';
-                } else if (row.sex === 0) {
-                    return '女';
-                }
-                if (row.sex === '男') {
-                    return '男';
-                } else {
-                    return '女';
-                }
-            },
             statusFormat(row, column) {
                 if (row.status === 1) {
                     return '有效';
                 } else {
                     return '无效';
                 }
+            },
+            filterMethod(query, item) {
+                return item.nameSearch.indexOf(query) > -1;
             },
             // 角色状态修改
             handleStatusChange(row) {
@@ -247,52 +242,47 @@
                 this.$set(this.query);
                 this.getData();
             },
-            // 删除操作
-            handleDelete(index, row) {
-                // 二次确认删除
-                this.$confirm('确定要删除吗？', '提示', {
-                    type: 'warning'
-                })
-                    .then(() => {
-                        let vm = this;
-                        let param = { 'id': row.id };
-                        deleteUser(param).then(function(result) {
-                            if (result.code === '0') {
-                                vm.$message.success('删除成功');
-                                vm.tableData.splice(index, 1);
-                            }
-                        });
-                    })
-                    .catch(() => {
-                    });
-            },
-            // 多选操作
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            },
-            delAllSelection() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.delList = this.delList.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
-                }
-                this.$message.error(`删除了${str}`);
-                this.multipleSelection = [];
-            },
             // 编辑操作
             handleEdit(index, row) {
                 this.idx = index;
-                this.form = row;
-                this.editVisible = true;
+                this.id=row.id;
+                // this.form = row;
+                this.bindRoleVisible = true;
+                let param = {f_eq_status:1};
+
+                let vm = this;
+                //每次都初始化为空
+                this.data=[];
+                getRoleList(param).then(function(result) {
+                    if (result.code === '0') {
+                        let roles=result.result;
+                        roles.forEach((role, index) => {
+                            vm.data.push({
+                                label: role.name,
+                                key: role.id,
+                                nameSearch: roles[index].name
+                            });
+                        });
+                    }
+                });
+                this.value=[];
+                row.roles.forEach((role,index)=>{
+                    this.value.push(role.id);
+                })
+
             },
             // 保存编辑
-            saveEdit() {
+            addRole() {
                 this.editVisible = false;
-                this.$set(this.tableData, this.idx, this.form);
-                this.form.sex = this.form.sex === '男' ? 1 : 0;
                 let vm = this;
-                edit(this.form).then(function(result) {
+                let data=[];
+                this.value.forEach((roleId,index)=>{
+                    data.push({
+                        userId:this.id,
+                        roleId: roleId
+                    })
+                });
+                userAddRole(data).then(function(result) {
                     if (result.code === '0') {
                         vm.$message.success(`修改成功`);
                     }
