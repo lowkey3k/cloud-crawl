@@ -99,42 +99,6 @@
             </div>
         </div>
 
-        <!--&lt;!&ndash; 编辑弹出框 &ndash;&gt;-->
-        <!--<el-dialog title="编辑" :visible.sync="editVisible" width="30%">-->
-        <!--<el-form ref="form" :model="form" label-width="70px">-->
-        <!--<el-form-item label="姓名">-->
-        <!--<el-input v-model="form.name"></el-input>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="年龄">-->
-        <!--<el-input v-model="form.age"></el-input>-->
-        <!--</el-form-item>-->
-        <!--&lt;!&ndash;<el-form-item label="性别">&ndash;&gt;-->
-        <!--&lt;!&ndash;<el-input v-model="form.sex"></el-input>&ndash;&gt;-->
-        <!--&lt;!&ndash;</el-form-item>&ndash;&gt;-->
-
-        <!--<el-form-item label="性别">-->
-        <!--<el-radio-group v-model="form.sex">-->
-        <!--<el-radio :label="1">男</el-radio>-->
-        <!--<el-radio :label="0">女</el-radio>-->
-        <!--</el-radio-group>-->
-        <!--</el-form-item>-->
-
-
-        <!--<el-form-item label="手机号">-->
-        <!--<el-input v-model="form.phone"></el-input>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="邮箱">-->
-        <!--<el-input v-model="form.email"></el-input>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="身份证">-->
-        <!--<el-input v-model="form.identify"></el-input>-->
-        <!--</el-form-item>-->
-        <!--</el-form>-->
-        <!--<span slot="footer" class="dialog-footer">-->
-        <!--<el-button @click="editVisible = false">取 消</el-button>-->
-        <!--<el-button type="primary" @click="saveEdit">确 定</el-button>-->
-        <!--</span>-->
-        <!--</el-dialog>-->
         <el-dialog title="绑定角色" :visible.sync="bindRoleVisible" width="45%" center>
             <template>
                 <el-transfer
@@ -156,7 +120,7 @@
 </template>
 
 <script>
-    import { getRoleList,userAddRole } from '../../api/role';
+    import { getRoleList, userAddRole } from '../../api/role';
     import { edit, fetchData } from '../../api/user';
 
     export default {
@@ -178,7 +142,6 @@
                 tableData: [],
                 multipleSelection: [],
                 delList: [],
-                editVisible: false,
                 bindRoleVisible: false,
                 pageTotal: 0,
                 form: {},
@@ -186,6 +149,7 @@
                 id: -1,
                 value: [],
                 data: []
+
             };
         },
         created() {
@@ -245,17 +209,17 @@
             // 编辑操作
             handleEdit(index, row) {
                 this.idx = index;
-                this.id=row.id;
+                this.id = row.id;
                 // this.form = row;
                 this.bindRoleVisible = true;
-                let param = {f_eq_status:1};
+                let param = { f_eq_status: 1 };
 
                 let vm = this;
                 //每次都初始化为空
-                this.data=[];
+                this.data = [];
                 getRoleList(param).then(function(result) {
                     if (result.code === '0') {
-                        let roles=result.result;
+                        let roles = result.result;
                         roles.forEach((role, index) => {
                             vm.data.push({
                                 label: role.name,
@@ -265,26 +229,30 @@
                         });
                     }
                 });
-                this.value=[];
-                row.roles.forEach((role,index)=>{
+                this.value = [];
+                row.roles.forEach((role, index) => {
                     this.value.push(role.id);
-                })
+                });
 
             },
             // 保存编辑
             addRole() {
-                this.editVisible = false;
                 let vm = this;
-                let data=[];
-                this.value.forEach((roleId,index)=>{
-                    data.push({
-                        userId:this.id,
-                        roleId: roleId
-                    })
+                let data = [];
+                this.value.forEach((roleId, index) => {
+                    if (roleId != null && this.id != null) {
+                        data.push({
+                            userId: this.id,
+                            roleId: roleId
+                        });
+                    }
                 });
                 userAddRole(data).then(function(result) {
                     if (result.code === '0') {
                         vm.$message.success(`修改成功`);
+                        vm.bindRoleVisible = false;
+                        vm.getData();
+
                     }
                 });
 

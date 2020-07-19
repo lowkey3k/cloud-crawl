@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 用户列表
+                    <i class="el-icon-lx-cascades"></i> 权限列表
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
@@ -11,68 +11,53 @@
             <div class="handle-box">
                 <el-button
                         type="primary"
-                        icon="el-icon-delete"
+                        icon="el-icon-plus"
                         class="handle-del mr10"
-                        @click="delAllSelection"
-                >批量删除
+                        @click="handleAdd"
+                >添加资源
                 </el-button>
                 <!--<el-select v-model="query.address" placeholder="地址" class="handle-select mr10">-->
                 <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
                 <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
                 <!--</el-select>-->
-                <el-input v-model="query.f_like_username" placeholder="用户名" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_identify" placeholder="身份证" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_phone" placeholder="手机号" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_email" placeholder="邮箱" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_eq_sex" placeholder="性别" class="handle-input mr10"></el-input>
+                <el-input v-model="query.f_like_name" placeholder="资源名称" class="handle-input mr10"></el-input>
+                <el-input v-model="query.f_like_sign" placeholder="资源标识" class="handle-input mr10"></el-input>
+                <el-input v-model="query.f_like_url" placeholder="资源地址" class="handle-input mr10"></el-input>
+                <el-input v-model="query.f_eq_type" placeholder="资源类型" class="handle-input mr10"></el-input>
+                <el-input v-model="query.f_eq_status" placeholder="状态" class="handle-input mr10"></el-input>
 
                 <el-button style="float: right" type="primary" icon="el-icon-search" @click="handleSearch">搜索
                 </el-button>
             </div>
-
+            <!--<el-table-->
+                    <!--:data="tableData"-->
+                    <!--style="width: 100%;margin-bottom: 20px;"-->
+                    <!--row-key="id"-->
+                    <!--border-->
+                    <!--default-expand-all-->
+                    <!--:tree-props="{children: 'children', hasChildren: 'hasChildren'}">-->
+                <!--<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>-->
+                <!--<el-table-column prop="name" label="资源名称"></el-table-column>-->
+                <!--<el-table-column prop="sign" label="资源标识"></el-table-column>-->
+                <!--<el-table-column prop="description" label="资源描述"></el-table-column>-->
+            <!--</el-table>-->
 
             <el-table
                     :data="tableData"
                     border
-                    class="table"
                     ref="multipleTable"
                     header-cell-class-name="table-header"
-                    @selection-change="handleSelectionChange"
-            >
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
+                    :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+                    row-key="id"
+                >
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column label="头像(查看大图)" align="center">
-                    <template slot-scope="scope">
-                        <el-image
-                                class="table-td-thumb"
-                                :src="scope.row.avatar"
-                                :preview-src-list="[scope.row.avatar]">
-                        </el-image>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="name" label="姓名"></el-table-column>
-                <el-table-column prop="username" label="用户名"></el-table-column>
+                <el-table-column prop="name" label="资源名称"></el-table-column>
+                <el-table-column prop="sign" label="资源标识"></el-table-column>
+                <el-table-column prop="description" label="资源描述"></el-table-column>
 
-                <el-table-column prop="age" label="年龄"></el-table-column>
-                <el-table-column prop="sexStr" label="性别" :formatter="sexFormat"></el-table-column>
+                <el-table-column prop="url" label="资源地址"></el-table-column>
 
-                <el-table-column prop="identify" label="身份证"></el-table-column>
-
-                <el-table-column prop="phone" label="手机号"></el-table-column>
-                <el-table-column prop="email" label="邮箱"></el-table-column>
-
-                <el-table-column prop="roles" label="角色" :formatter="roleFormat"></el-table-column>
-
-
-                <!--<el-table-column  label="状态" :formatter="statusFormat">-->
-                <!--<el-switch-->
-                <!--v-model="status"-->
-                <!--active-color="#13ce66"-->
-                <!--inactive-color="#ff4949">-->
-                <!--</el-switch>-->
-
-                <!--</el-table-column>-->
-
+                <el-table-column prop="type" label="资源类型"></el-table-column>
                 <el-table-column label="状态" align="center" width="100">
                     <template slot-scope="scope">
                         <el-switch
@@ -105,6 +90,9 @@
                     </template>
                 </el-table-column>
             </el-table>
+
+
+
             <div class="pagination">
                 <el-pagination
                         background
@@ -118,34 +106,22 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="editForm" :rules="editRules" :model="form" label-width="70px">
-                <el-form-item prop="name" label="姓名">
+        <el-dialog title="编辑" :visible.sync="editVisible" width="35%">
+            <el-form ref="editForm" :model="form" :rules="rules" label-width="80px">
+                <el-form-item prop="name" label="资源名称">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="年龄">
-                    <el-input v-model="form.age"></el-input>
+                <el-form-item prop="sign" label="资源标识">
+                    <el-input v-model="form.sign"></el-input>
                 </el-form-item>
-                <!--<el-form-item label="性别">-->
-                <!--<el-input v-model="form.sex"></el-input>-->
-                <!--</el-form-item>-->
-
-                <el-form-item label="性别">
-                    <el-radio-group v-model="form.sex">
-                        <el-radio :label="1">男</el-radio>
-                        <el-radio :label="0">女</el-radio>
-                    </el-radio-group>
+                <el-form-item label="资源类型">
+                    <el-input v-model="form.type"></el-input>
                 </el-form-item>
-
-
-                <el-form-item prop="phone" label="手机号">
-                    <el-input v-model="form.phone"></el-input>
+                <el-form-item label="资源地址">
+                    <el-input v-model="form.url"></el-input>
                 </el-form-item>
-                <el-form-item prop="email" label="邮箱">
-                    <el-input v-model="form.email"></el-input>
-                </el-form-item>
-                <el-form-item prop="identify" label="身份证">
-                    <el-input v-model="form.identify"></el-input>
+                <el-form-item label="资源描述">
+                    <el-input v-model="form.description"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -153,29 +129,61 @@
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
         </el-dialog>
+
+        <!-- 添加弹出框 -->
+        <el-dialog title="编辑" :visible.sync="addVisible" width="35%">
+            <el-form ref="addForm" :model="form" :rules="addRules" label-width="80px">
+                <el-form-item prop="name" label="资源名称">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item prop="sign" label="资源标识">
+                    <el-input v-model="form.sign"></el-input>
+                </el-form-item>
+                <el-form-item label="资源类型">
+                    <el-input v-model="form.type"></el-input>
+                </el-form-item>
+                <el-form-item label="资源地址">
+                    <el-input v-model="form.url"></el-input>
+                </el-form-item>
+                <el-form-item label="资源描述">
+                    <el-input v-model="form.description"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addPermission">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import { edit, fetchData, deleteUser } from '../../api/user';
+    import { getPermissionPage,getPermissionTree, addPermission, editCheckUnique, editPermission ,deletePermission} from '../../api/permission';
     import service from '../../utils/request';
+
 
     export default {
         name: 'basetable',
         data() {
-            let checkName = (rule, value, callback) => {
-                service.get('user/checkUnique?name=username&value=' + this.param.username).then(function(result) {
+            let checkSign = (rule, value, callback) => {
+                service.get('permission/checkUnique?name=sign&value=' + this.form.sign).then(function(result) {
                     if (result.result) {
-                        return callback(new Error('用户名已存在'));
+                        return callback(new Error('资源已存在'));
                     } else {
                         callback();
                     }
                 });
             };
-            let checkPhone = (rule, value, callback) => {
-                service.get('user/checkUnique?name=phone&value=' + this.param.phone).then(function(result) {
+            let editCheckSign = (rule, value, callback) => {
+                let param = {
+                    id: this.form.id,
+                    name: 'sign',
+                    value: this.form.sign
+                };
+                editCheckUnique(param).then(function(result) {
                     if (result.result) {
-                        return callback(new Error('手机号已注册'));
+                        return callback(new Error('资源已存在'));
                     } else {
                         callback();
                     }
@@ -187,74 +195,37 @@
                     name: '',
                     pageNo: 1,
                     pageSize: 10,
-                    f_like_username: '',
-                    f_like_identify: '',
-                    f_like_email: '',
-                    f_eq_sex: '',
-                    f_like_phone: ''
+                    f_like_name: '',
+                    f_like_sign: '',
+                    f_eq_status: '',
+                    f_eq_type: '',
+                    f_like_url: ''
+
                 },
                 tableData: [],
                 multipleSelection: [],
                 delList: [],
                 editVisible: false,
+                addVisible: false,
                 pageTotal: 0,
                 form: {},
                 idx: -1,
                 id: -1,
-                editRules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
-                    username: [{
-                        required: true,
-                        message: '请输入用户名',
-                        trigger: 'blur'
-                    }, {
-                        min: 6,
-                        message: '用户名不能少于6位'
-                    },
+                rules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
+                    name: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
+                    sign: [{ required: true, message: '请输入资源标识', trigger: 'blur' },
                         {
-                            validator: checkName,
+                            validator: editCheckSign,
                             trigger: 'blur'
-                        }
-                    ],
-                    password: [{
-                        required: true,
-                        message: '请输入密码',
-                        trigger: 'blur'
-                    }, {
-                        min: 6,
-                        max: 18,
-                        message: '密码在6-21位之间，并且包含英文字母加数字'
-                    }, {
-                        pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/,
-                        message: '密码必须包含数字和字母两种，且必须为6到18位'
-                    }
-                    ],
-                    email: [{
-                        required: true,
-                        type: 'email',
-                        message: '请输入正确的邮箱',
-                        trigger: 'blur'
-                    }],
-                    phone: [{
-                        required: true,
-                        message: '请输入正确手机号',
-                        trigger: 'blur'
-                    }, {
-                        pattern: /^1[3-9]\d{9}$/,
-                        message: '手机号格式错误'
-                    },
+                        }]
+                },
+                addRules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
+                    name: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
+                    sign: [{ required: true, message: '请输入资源标识', trigger: 'blur' },
                         {
-                            validator: checkPhone,
+                            validator: checkSign,
                             trigger: 'blur'
-                        }],
-                    identify: [{
-                        required: true,
-                        message: '请输入身份证号',
-                        trigger: 'blur'
-                    }, {
-                        min: 15,
-                        max: 15,
-                        message: '请输入正确身份证'
-                    }]
+                        }]
                 }
             };
         },
@@ -264,23 +235,11 @@
         methods: {
             // 获取 easy-mock 的模拟数据
             getData() {
-                fetchData(this.query).then(res => {
+                getPermissionTree(this.query).then(res => {
                     console.log(res);
-                    this.tableData = res.result.records;
+                    this.tableData = res.result;
                     this.pageTotal = res.result.total || 50;
                 });
-            },
-            sexFormat(row, column) {
-                if (row.sex === 1) {
-                    return '男';
-                } else if (row.sex === 0) {
-                    return '女';
-                }
-                if (row.sex === '男') {
-                    return '男';
-                } else {
-                    return '女';
-                }
             },
             statusFormat(row, column) {
                 if (row.status === 1) {
@@ -289,10 +248,10 @@
                     return '无效';
                 }
             },
-            // 角色状态修改
+            // 资源状态修改
             handleStatusChange(row) {
                 let text = row.status === 1 ? '启用' : '停用';
-                this.$confirm('确认要"' + text + '""' + row.name + '"用户吗?', '警告', {
+                this.$confirm('确认要"' + text + '""' + row.name + '"资源吗?', '警告', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -301,7 +260,7 @@
                         id: row.id,
                         status: row.status
                     };
-                    return edit(data);
+                    return editPermission(data);
                 }).then(() => {
                     this.$message.success(text + '成功');
                 }).catch(function() {
@@ -330,7 +289,7 @@
                     .then(() => {
                         let vm = this;
                         let param = { 'id': row.id };
-                        deleteUser(param).then(function(result) {
+                        deletePermission(param).then(function(result) {
                             if (result.code === '0') {
                                 vm.$message.success('删除成功');
                                 vm.tableData.splice(index, 1);
@@ -362,18 +321,42 @@
             },
             // 保存编辑
             saveEdit() {
-                this.editVisible = false;
-                this.$set(this.tableData, this.idx, this.form);
-                this.form.sex = this.form.sex === '男' ? 1 : 0;
-                let vm = this;
-                vm.$refs.editForm.validate(valid => {
-                    if (valid) {
-                        edit(this.form).then(function(result) {
+                this.$refs.editForm.validate(validate => {
+                    if (validate) {
+                        this.$set(this.tableData, this.idx, this.form);
+                        let vm = this;
+                        editPermission(this.form).then(function(result) {
                             if (result.code === '0') {
                                 vm.$message.success(`修改成功`);
+                                vm.editVisible = false;
+                                vm.getData();
                             }
                         });
-                    }
+                    } else
+                        return false;
+                });
+
+            }
+            ,
+            handleAdd() {
+                this.addVisible = true;
+                //每次都初始化为空
+                this.form = {};
+            },
+            // 保存
+            addPermission() {
+                this.$refs.addForm.validate(validate => {
+                    if (validate) {
+                        let vm = this;
+                        addPermission(this.form).then(function(res) {
+                            if (res.code === '0') {
+                                vm.$message.success('添加成功');
+                                vm.addVisible = false;
+                                vm.getData();
+                            }
+                        });
+                    } else
+                        return false;
                 });
             },
             // 分页导航

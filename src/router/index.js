@@ -1,6 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+
+const routerPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+    return routerPush.call(this, location).catch(error=> error)
+};
 Vue.use(Router);
 
 export default new Router({
@@ -29,6 +34,26 @@ export default new Router({
                     path: '/userAuth',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/UserAuth.vue'),
                     meta: { title: '用户授权' }
+                },
+                {
+                    path: '/rolePermission',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/RolePermission.vue'),
+                    meta: { title: '角色管理' }
+                },
+                {
+                    path: '/permissionList',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/PermissionList.vue'),
+                    meta: { title: '资源管理' }
+                },
+                {
+                    path: '/accessLog',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/AccessLog.vue'),
+                    meta: { title: '访问日志' }
+                },
+                {
+                    path: '/loginLog',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/LoginLog.vue'),
+                    meta: { title: '登陆日志' }
                 },
                 {
                     path: '/icon',

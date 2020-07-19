@@ -30,9 +30,10 @@
                                         v-for="(threeItem,i) in subItem.subs"
                                         :key="i"
                                         :index="threeItem.index"
-                                > <template slot="title"><i :class="threeItem.icon"></i>
-                                    {{ threeItem.title }}
-                                </template>
+                                >
+                                    <template slot="title"><i :class="threeItem.icon"></i>
+                                        {{ threeItem.title }}
+                                    </template>
                                 </el-menu-item>
                             </el-submenu>
                             <el-menu-item
@@ -72,7 +73,7 @@
                         title: '系统首页'
                     },
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'el-icon-s-grid',
                         index: '2',
                         title: '系统管理',
                         subs: [
@@ -86,12 +87,41 @@
                                 index: 'userAuth',
                                 title: '用户授权'
                             }
+                            ,
+                            {
+                                icon: 'el-icon-s-check',
+                                index: 'rolePermission',
+                                title: '角色管理'
+                            }
+                            ,
+                            {
+                                icon: 'el-icon-s-help',
+                                index: 'permissionList',
+                                title: '资源管理'
+                            }
                         ]
                     },
                     {
                         icon: 'el-icon-lx-cascades',
                         index: 'table',
                         title: '基础表格'
+                    },
+                    {
+                        icon: 'el-icon-notebook-2',
+                        index: 'log',
+                        title: '日志管理'
+                        , subs: [
+                            {
+                                icon: 'el-icon-lx-people',
+                                index: 'accessLog',
+                                title: '访问日志'
+                            },
+                            {
+                                icon: 'el-icon-user-solid',
+                                index: 'loginLog',
+                                title: '登陆日志'
+                            }
+                        ]
                     },
                     {
                         icon: 'el-icon-lx-copy',

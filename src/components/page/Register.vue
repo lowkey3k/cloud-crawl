@@ -52,17 +52,21 @@
 
     export default {
         data: function() {
-            var checkName = (rule, value, callback) => {
+            let checkName = (rule, value, callback) => {
                 service.get('user/checkUnique?name=username&value=' + this.param.username).then(function(result) {
                     if (result.result) {
                         return callback(new Error('用户名已存在'));
+                    }else {
+                        callback();
                     }
                 });
             };
-            var checkPhone = (rule, value, callback) => {
+            let checkPhone = (rule, value, callback) => {
                 service.get('user/checkUnique?name=phone&value=' + this.param.phone).then(function(result) {
                     if (result.result) {
                         return callback(new Error('手机号已注册'));
+                    }else {
+                        callback();
                     }
                 });
             };
