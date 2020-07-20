@@ -17,6 +17,13 @@ export const login = query => {
     });
 };
 
+export const logout = query => {
+    return request({
+        url: '/logout',
+        method: 'get'
+    });
+};
+
 
 
 export const edit = data => {

@@ -30,16 +30,16 @@
                 </el-button>
             </div>
             <!--<el-table-->
-                    <!--:data="tableData"-->
-                    <!--style="width: 100%;margin-bottom: 20px;"-->
-                    <!--row-key="id"-->
-                    <!--border-->
-                    <!--default-expand-all-->
-                    <!--:tree-props="{children: 'children', hasChildren: 'hasChildren'}">-->
-                <!--<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>-->
-                <!--<el-table-column prop="name" label="资源名称"></el-table-column>-->
-                <!--<el-table-column prop="sign" label="资源标识"></el-table-column>-->
-                <!--<el-table-column prop="description" label="资源描述"></el-table-column>-->
+            <!--:data="tableData"-->
+            <!--style="width: 100%;margin-bottom: 20px;"-->
+            <!--row-key="id"-->
+            <!--border-->
+            <!--default-expand-all-->
+            <!--:tree-props="{children: 'children', hasChildren: 'hasChildren'}">-->
+            <!--<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>-->
+            <!--<el-table-column prop="name" label="资源名称"></el-table-column>-->
+            <!--<el-table-column prop="sign" label="资源标识"></el-table-column>-->
+            <!--<el-table-column prop="description" label="资源描述"></el-table-column>-->
             <!--</el-table>-->
 
             <el-table
@@ -49,7 +49,7 @@
                     header-cell-class-name="table-header"
                     :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
                     row-key="id"
-                >
+            >
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
                 <el-table-column prop="name" label="资源名称"></el-table-column>
                 <el-table-column prop="sign" label="资源标识"></el-table-column>
@@ -57,7 +57,7 @@
 
                 <el-table-column prop="url" label="资源地址"></el-table-column>
 
-                <el-table-column prop="type" label="资源类型"></el-table-column>
+                <el-table-column prop="type" label="资源类型" :formatter="typeFormat"></el-table-column>
                 <el-table-column label="状态" align="center" width="100">
                     <template slot-scope="scope">
                         <el-switch
@@ -92,7 +92,6 @@
             </el-table>
 
 
-
             <div class="pagination">
                 <el-pagination
                         background
@@ -115,8 +114,13 @@
                     <el-input v-model="form.sign"></el-input>
                 </el-form-item>
                 <el-form-item label="资源类型">
-                    <el-input v-model="form.type"></el-input>
+                    <el-select placeholder="资源类型" @change="changeSelect" v-model="permissionCode">
+                        <el-option v-for="item in permissionTypes" :key="item.code" :label="item.name"
+                                   :value="item.code">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
+
                 <el-form-item label="资源地址">
                     <el-input v-model="form.url"></el-input>
                 </el-form-item>
@@ -140,7 +144,11 @@
                     <el-input v-model="form.sign"></el-input>
                 </el-form-item>
                 <el-form-item label="资源类型">
-                    <el-input v-model="form.type"></el-input>
+                    <el-select placeholder="资源类型" @change="changeSelect" v-model="permissionCode">
+                        <el-option v-for="item in permissionTypes" :key="item.code" :label="item.name"
+                                   :value="item.code">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="资源地址">
                     <el-input v-model="form.url"></el-input>
@@ -158,8 +166,17 @@
 </template>
 
 <script>
-    import { edit, fetchData, deleteUser } from '../../api/user';
-    import { getPermissionPage,getPermissionTree, addPermission, editCheckUnique, editPermission ,deletePermission} from '../../api/permission';
+    import {edit, fetchData, deleteUser} from '../../api/user';
+    import {findTreeByPid} from '../../api/datadict';
+
+    import {
+        getPermissionPage,
+        getPermissionTree,
+        addPermission,
+        editCheckUnique,
+        editPermission,
+        deletePermission
+    } from '../../api/permission';
     import service from '../../utils/request';
 
 
@@ -167,7 +184,7 @@
         name: 'basetable',
         data() {
             let checkSign = (rule, value, callback) => {
-                service.get('permission/checkUnique?name=sign&value=' + this.form.sign).then(function(result) {
+                service.get('permission/checkUnique?name=sign&value=' + this.form.sign).then(function (result) {
                     if (result.result) {
                         return callback(new Error('资源已存在'));
                     } else {
@@ -181,7 +198,7 @@
                     name: 'sign',
                     value: this.form.sign
                 };
-                editCheckUnique(param).then(function(result) {
+                editCheckUnique(param).then(function (result) {
                     if (result.result) {
                         return callback(new Error('资源已存在'));
                     } else {
@@ -211,17 +228,19 @@
                 form: {},
                 idx: -1,
                 id: -1,
+                permissionCode: '',
+                permissionTypes: [],
                 rules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
-                    name: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
-                    sign: [{ required: true, message: '请输入资源标识', trigger: 'blur' },
+                    name: [{required: true, message: '请输入资源名称', trigger: 'blur'}],
+                    sign: [{required: true, message: '请输入资源标识', trigger: 'blur'},
                         {
                             validator: editCheckSign,
                             trigger: 'blur'
                         }]
                 },
                 addRules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
-                    name: [{ required: true, message: '请输入资源名称', trigger: 'blur' }],
-                    sign: [{ required: true, message: '请输入资源标识', trigger: 'blur' },
+                    name: [{required: true, message: '请输入资源名称', trigger: 'blur'}],
+                    sign: [{required: true, message: '请输入资源标识', trigger: 'blur'},
                         {
                             validator: checkSign,
                             trigger: 'blur'
@@ -231,6 +250,7 @@
         },
         created() {
             this.getData();
+            this.getPermissionType();
         },
         methods: {
             // 获取 easy-mock 的模拟数据
@@ -248,6 +268,26 @@
                     return '无效';
                 }
             },
+            typeFormat(row, column) {
+                return this.permissionTypes.map(function (obj, index) {
+                    if (obj.code === row.type) {
+                        return obj.name;
+                    }
+                });
+            },
+            changeSelect(code) {
+                this.permissionCode = code;
+            }
+            ,
+            getPermissionType() {
+                let param = {f_eq_pid: "1002"};
+                let vm = this;
+                findTreeByPid(param).then(function (res) {
+                    if (res.code === '0') {
+                        vm.permissionTypes = res.result;
+                    }
+                })
+            },
             // 资源状态修改
             handleStatusChange(row) {
                 let text = row.status === 1 ? '启用' : '停用';
@@ -255,7 +295,7 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
-                }).then(function() {
+                }).then(function () {
                     let data = {
                         id: row.id,
                         status: row.status
@@ -263,14 +303,14 @@
                     return editPermission(data);
                 }).then(() => {
                     this.$message.success(text + '成功');
-                }).catch(function() {
+                }).catch(function () {
 
                     row.status = row.status === 0 ? 1 : 0;
                 });
 
             },
             roleFormat(row, column) {
-                return row.roles.map(function(obj, index) {
+                return row.roles.map(function (obj, index) {
                     return obj.name;
                 }).join(',');
             },
@@ -288,8 +328,8 @@
                 })
                     .then(() => {
                         let vm = this;
-                        let param = { 'id': row.id };
-                        deletePermission(param).then(function(result) {
+                        let param = {'id': row.id};
+                        deletePermission(param).then(function (result) {
                             if (result.code === '0') {
                                 vm.$message.success('删除成功');
                                 vm.tableData.splice(index, 1);
@@ -317,15 +357,19 @@
             handleEdit(index, row) {
                 this.idx = index;
                 this.form = row;
+                this.getPermissionType();
                 this.editVisible = true;
+                let vm = this;
+                this.permissionCode = row.type;
             },
             // 保存编辑
             saveEdit() {
                 this.$refs.editForm.validate(validate => {
                     if (validate) {
                         this.$set(this.tableData, this.idx, this.form);
+                        this.form.type = this.permissionCode;
                         let vm = this;
-                        editPermission(this.form).then(function(result) {
+                        editPermission(this.form).then(function (result) {
                             if (result.code === '0') {
                                 vm.$message.success(`修改成功`);
                                 vm.editVisible = false;
@@ -339,6 +383,7 @@
             }
             ,
             handleAdd() {
+                this.getPermissionType();
                 this.addVisible = true;
                 //每次都初始化为空
                 this.form = {};
@@ -348,7 +393,7 @@
                 this.$refs.addForm.validate(validate => {
                     if (validate) {
                         let vm = this;
-                        addPermission(this.form).then(function(res) {
+                        addPermission(this.form).then(function (res) {
                             if (res.code === '0') {
                                 vm.$message.success('添加成功');
                                 vm.addVisible = false;

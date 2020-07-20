@@ -50,6 +50,7 @@
 </template>
 <script>
 import bus from '../common/bus';
+import { logout } from '../../api/user';
 export default {
     data() {
         return {
@@ -70,6 +71,9 @@ export default {
         handleCommand(command) {
             if (command == 'loginout') {
                 localStorage.removeItem('current_username');
+				logout(undefined).then(function(res){
+					
+				});
                 this.$router.push('/login');
             }
         },

@@ -24,6 +24,21 @@
 
                 <el-table-column prop="username" label="用户名"></el-table-column>
                 <el-table-column prop="ipAddress" label="ip"></el-table-column>
+				 <!--<el-table-column-->
+				      <!--label="姓名"-->
+				      <!--width="180">-->
+				      <!--<template slot-scope="scope">-->
+				        <!--<el-popover trigger="hover" placement="top">-->
+				          <!--<p>用户名: {{ scope.row.username }}</p>-->
+				          <!--<p>访问时间: {{ scope.row.accessTime }}</p>-->
+				          <!--<div slot="reference" class="name-wrapper">-->
+				            <!--<el-tag size="medium">{{ scope.row.msg }}</el-tag>-->
+				          <!--</div>-->
+				        <!--</el-popover>-->
+				      <!--</template>-->
+				    <!--</el-table-column>-->
+				
+				
                 <el-table-column prop="msg" label="描述"></el-table-column>
                 <el-table-column prop="accessTime" label="访问时间"></el-table-column>
 
