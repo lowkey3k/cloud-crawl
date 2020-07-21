@@ -99,7 +99,18 @@
                                 index: 'permissionList',
                                 title: '资源管理'
                             }
+                            ,
+                            {
+                                icon: 'el-icon-tickets',
+                                index: 'project',
+                                title: '项目管理'
+                            }
                         ]
+                    },
+                    {
+                        icon: 'el-icon-lx-cascades',
+                        index: 'test',
+                        title: '测试'
                     },
                     {
                         icon: 'el-icon-lx-cascades',

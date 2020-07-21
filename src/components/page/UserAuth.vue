@@ -9,25 +9,54 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <!--<el-button-->
-                <!--type="primary"-->
-                <!--icon="el-icon-delete"-->
-                <!--class="handle-del mr10"-->
-                <!--@click="delAllSelection"-->
-                <!--&gt;批量删除-->
-                <!--</el-button>-->
-                <!--<el-select v-model="query.address" placeholder="地址" class="handle-select mr10">-->
-                <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
-                <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
-                <!--</el-select>-->
-                <el-input v-model="query.f_like_username" placeholder="用户名" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_identify" placeholder="身份证" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_phone" placeholder="手机号" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_email" placeholder="邮箱" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_eq_sex" placeholder="性别" class="handle-input mr10"></el-input>
+                <el-form :model="query" :rules="rules" ref="ruleForm" :inline="true">
+                    <el-form-item label="姓名" prop="f_like_name">
+                        <el-input
+                                v-model="query.f_like_name"
+                                placeholder="请输入姓名"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户名" prop="f_like_username">
+                        <!--keyup.enter.native回车-->
+                        <el-input
+                                v-model="query.f_like_username"
+                                placeholder="请输入用户名"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
 
-                <el-button style="float: right" type="primary" icon="el-icon-search" @click="handleSearch">搜索
-                </el-button>
+                    <el-form-item label="状态" prop="f_eq_status">
+                        <el-select
+                                v-model="query.f_eq_status"
+                                placeholder="用户状态"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                        >
+                            <el-option
+                                    v-for="dict in statusOptions"
+                                    :key="dict.code"
+                                    :label="dict.name"
+                                    :value="dict.code"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item style="float: right">
+                        <el-button style="float: right" icon="el-icon-refresh" @click="resetForm('ruleForm')">重置
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item style="float: right">
+                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索
+                        </el-button>
+                    </el-form-item>
+                </el-form>
             </div>
 
 
@@ -122,6 +151,7 @@
 <script>
     import { getRoleList, userAddRole } from '../../api/role';
     import { edit, fetchData } from '../../api/user';
+    import {findTreeByPid} from '../../api/datadict';
 
     export default {
 
@@ -129,15 +159,11 @@
         data() {
             return {
                 query: {
-                    // address: '',
-                    name: '',
                     pageNo: 1,
                     pageSize: 10,
                     f_like_username: '',
-                    f_like_identify: '',
-                    f_like_email: '',
-                    f_eq_sex: '',
-                    f_like_phone: ''
+                    f_like_name: undefined,
+                    f_eq_status: undefined
                 },
                 tableData: [],
                 multipleSelection: [],
@@ -148,12 +174,15 @@
                 idx: -1,
                 id: -1,
                 value: [],
-                data: []
-
+                data: [],
+                rules: {},
+                statusOptions: []
             };
         },
         created() {
             this.getData();
+            this.getStatusDataDict();
+            this.getSexDataDict();
         },
         methods: {
             // 获取 easy-mock 的模拟数据
@@ -161,8 +190,17 @@
                 fetchData(this.query).then(res => {
                     console.log(res);
                     this.tableData = res.result.records;
-                    this.pageTotal = res.result.total || 50;
+                    this.pageTotal = res.result.total || 0;
                 });
+            },
+            getStatusDataDict() {
+                let param = {f_eq_pid: "1003"};
+                let vm = this;
+                findTreeByPid(param).then(function (res) {
+                    if (res.code === '0') {
+                        vm.statusOptions = res.result;
+                    }
+                })
             },
             statusFormat(row, column) {
                 if (row.status === 1) {
@@ -173,6 +211,11 @@
             },
             filterMethod(query, item) {
                 return item.nameSearch.indexOf(query) > -1;
+            },
+            /** 重置按钮操作 */
+
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
             },
             // 角色状态修改
             handleStatusChange(row) {

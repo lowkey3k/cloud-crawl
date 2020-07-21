@@ -135,7 +135,7 @@
         </el-dialog>
 
         <!-- 添加弹出框 -->
-        <el-dialog title="编辑" :visible.sync="addVisible" width="35%">
+        <el-dialog title="添加" :visible.sync="addVisible" width="35%">
             <el-form ref="addForm" :model="form" :rules="addRules" label-width="80px">
                 <el-form-item prop="name" label="资源名称">
                     <el-input v-model="form.name"></el-input>
@@ -213,6 +213,7 @@
                     pageNo: 1,
                     pageSize: 10,
                     f_like_name: '',
+                    f_like_username: '',
                     f_like_sign: '',
                     f_eq_status: '',
                     f_eq_type: '',
@@ -258,7 +259,7 @@
                 getPermissionTree(this.query).then(res => {
                     console.log(res);
                     this.tableData = res.result;
-                    this.pageTotal = res.result.total || 50;
+                    this.pageTotal = res.result.total || 0;
                 });
             },
             statusFormat(row, column) {

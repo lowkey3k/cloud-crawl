@@ -9,25 +9,112 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button
-                        type="primary"
-                        icon="el-icon-delete"
-                        class="handle-del mr10"
-                        @click="delAllSelection"
-                >批量删除
-                </el-button>
-                <!--<el-select v-model="query.address" placeholder="地址" class="handle-select mr10">-->
-                <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
-                <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
-                <!--</el-select>-->
-                <el-input v-model="query.f_like_username" placeholder="用户名" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_identify" placeholder="身份证" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_phone" placeholder="手机号" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_email" placeholder="邮箱" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_eq_sex" placeholder="性别" class="handle-input mr10"></el-input>
+                <el-form :model="query" :rules="rules" ref="ruleForm" :inline="true">
 
-                <el-button style="float: right" type="primary" icon="el-icon-search" @click="handleSearch">搜索
-                </el-button>
+                    <el-form-item label="用户名" prop="f_like_username">
+                        <!--keyup.enter.native回车-->
+                        <el-input
+                                v-model="query.f_like_username"
+                                placeholder="请输入用户名"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓名" prop="f_like_name">
+                        <el-input
+                                v-model="query.f_like_name"
+                                placeholder="请输入姓名"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态" prop="f_eq_status">
+                        <el-select
+                                v-model="query.f_eq_status"
+                                placeholder="用户状态"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                        >
+                            <el-option
+                                    v-for="dict in statusOptions"
+                                    :key="dict.code"
+                                    :label="dict.name"
+                                    :value="dict.code"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="性别" prop="f_eq_sex">
+                        <el-select
+                                v-model="query.f_eq_sex"
+                                placeholder="性别"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                        >
+                            <el-option
+                                    v-for="dict in sexOptions"
+                                    :key="dict.code"
+                                    :label="dict.name"
+                                    :value="dict.code"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="手机号" prop="f_like_phone">
+                        <el-input
+                                v-model="query.f_like_phone"
+                                placeholder="请输入手机号"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="邮箱" prop="f_like_email">
+                        <el-input
+                                v-model="query.f_like_email"
+                                placeholder="请输入邮箱"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="身份证" prop="f_like_identify">
+                        <el-input
+                                v-model="query.f_like_identify"
+                                placeholder="请输入身份证号"
+                                clearable
+                                size="small"
+                                style="width: 240px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+
+
+                    <el-form-item style="float: right">
+                        <el-button
+                                type="primary"
+                                icon="el-icon-delete"
+                                class="handle-del mr10"
+                                @click="delAllSelection"
+                        >批量删除
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item style="float: right">
+                        <el-button style="float: right" icon="el-icon-refresh" @click="resetForm('ruleForm')">重置
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item style="float: right">
+                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索
+                        </el-button>
+                    </el-form-item>
+                </el-form>
+
             </div>
 
 
@@ -157,14 +244,18 @@
 </template>
 
 <script>
-    import { edit, fetchData, deleteUser } from '../../api/user';
+    import {edit, fetchData, deleteUser, deleteByIds} from '../../api/user';
+    import {findTreeByPid} from '../../api/datadict';
+
     import service from '../../utils/request';
+    import ElFormItem from "../../../node_modules/element-ui/packages/form/src/form-item.vue";
 
     export default {
+        components: {ElFormItem},
         name: 'basetable',
         data() {
             let checkName = (rule, value, callback) => {
-                service.get('user/checkUnique?name=username&value=' + this.param.username).then(function(result) {
+                service.get('user/checkUnique?name=username&value=' + this.param.username).then(function (result) {
                     if (result.result) {
                         return callback(new Error('用户名已存在'));
                     } else {
@@ -173,7 +264,7 @@
                 });
             };
             let checkPhone = (rule, value, callback) => {
-                service.get('user/checkUnique?name=phone&value=' + this.param.phone).then(function(result) {
+                service.get('user/checkUnique?name=phone&value=' + this.param.phone).then(function (result) {
                     if (result.result) {
                         return callback(new Error('手机号已注册'));
                     } else {
@@ -183,14 +274,13 @@
             };
             return {
                 query: {
-                    // address: '',
-                    name: '',
                     pageNo: 1,
                     pageSize: 10,
                     f_like_username: '',
                     f_like_identify: '',
                     f_like_email: '',
                     f_eq_sex: '',
+                    f_eq_status: undefined,
                     f_like_phone: ''
                 },
                 tableData: [],
@@ -201,6 +291,9 @@
                 form: {},
                 idx: -1,
                 id: -1,
+                rules: {},
+                statusOptions: [],
+                sexOptions: [],
                 editRules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
                     username: [{
                         required: true,
@@ -260,6 +353,8 @@
         },
         created() {
             this.getData();
+            this.getStatusDataDict();
+            this.getSexDataDict();
         },
         methods: {
             // 获取 easy-mock 的模拟数据
@@ -267,8 +362,26 @@
                 fetchData(this.query).then(res => {
                     console.log(res);
                     this.tableData = res.result.records;
-                    this.pageTotal = res.result.total || 50;
+                    this.pageTotal = res.result.total || 0;
                 });
+            },
+            getStatusDataDict() {
+                let param = {f_eq_pid: "1003"};
+                let vm = this;
+                findTreeByPid(param).then(function (res) {
+                    if (res.code === '0') {
+                        vm.statusOptions = res.result;
+                    }
+                })
+            },
+            getSexDataDict() {
+                let param = {f_eq_pid: "1001"};
+                let vm = this;
+                findTreeByPid(param).then(function (res) {
+                    if (res.code === '0') {
+                        vm.sexOptions = res.result;
+                    }
+                })
             },
             sexFormat(row, column) {
                 if (row.sex === 1) {
@@ -281,6 +394,11 @@
                 } else {
                     return '女';
                 }
+            },
+            /** 重置按钮操作 */
+
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
             },
             statusFormat(row, column) {
                 if (row.status === 1) {
@@ -296,7 +414,7 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
-                }).then(function() {
+                }).then(function () {
                     let data = {
                         id: row.id,
                         status: row.status
@@ -304,14 +422,14 @@
                     return edit(data);
                 }).then(() => {
                     this.$message.success(text + '成功');
-                }).catch(function() {
+                }).catch(function () {
 
                     row.status = row.status === 0 ? 1 : 0;
                 });
 
             },
             roleFormat(row, column) {
-                return row.roles.map(function(obj, index) {
+                return row.roles.map(function (obj, index) {
                     return obj.name;
                 }).join(',');
             },
@@ -329,8 +447,8 @@
                 })
                     .then(() => {
                         let vm = this;
-                        let param = { 'id': row.id };
-                        deleteUser(param).then(function(result) {
+                        let param = {'id': row.id};
+                        deleteUser(param).then(function (result) {
                             if (result.code === '0') {
                                 vm.$message.success('删除成功');
                                 vm.tableData.splice(index, 1);
@@ -348,10 +466,22 @@
                 const length = this.multipleSelection.length;
                 let str = '';
                 this.delList = this.delList.concat(this.multipleSelection);
+                if (this.delList.length == 0) {
+                    this.$message.warning("请勾选要删除的人员");
+                    return;
+                }
+                let ids = this.delList.map(function (obj, index) {
+                    return obj.id;
+                });
                 for (let i = 0; i < length; i++) {
                     str += this.multipleSelection[i].name + ' ';
                 }
-                this.$message.error(`删除了${str}`);
+                let vm = this;
+                deleteByIds(ids).then(function (res) {
+                    if (res.code === '0') {
+                        vm.$message.error(`删除了${str}`);
+                    }
+                });
                 this.multipleSelection = [];
             },
             // 编辑操作
@@ -368,7 +498,7 @@
                 let vm = this;
                 vm.$refs.editForm.validate(valid => {
                     if (valid) {
-                        edit(this.form).then(function(result) {
+                        edit(this.form).then(function (result) {
                             if (result.code === '0') {
                                 vm.$message.success(`修改成功`);
                             }

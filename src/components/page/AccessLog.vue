@@ -29,28 +29,28 @@
                             <el-form-item label="模块：">
                                 <span>{{ props.row.module }}</span>
                             </el-form-item>
-                            <el-form-item label="操作">
+                            <el-form-item label="操作:">
                                 <span>{{ props.row.action }}</span>
                             </el-form-item>
-                            <el-form-item label="操作描述">
+                            <el-form-item label="操作描述:">
                                 <span>{{ props.row.description }}</span>
                             </el-form-item>
-                            <el-form-item label="ip">
+                            <el-form-item label="ip:">
                                 <span>{{ props.row.ip }}</span>
                             </el-form-item>
-                            <el-form-item label="访问地址">
+                            <el-form-item label="访问地址:">
                                 <span>{{ props.row.url }}</span>
                             </el-form-item>
-                            <el-form-item label="访问时间">
+                            <el-form-item label="访问时间:">
                                 <span>{{ parseTime(props.row.requestTime) }}</span>
                             </el-form-item>
-                            <el-form-item label="响应时间">
+                            <el-form-item label="响应时间:">
                                 <span>{{ parseTime(props.row.responseTime) }}</span>
                             </el-form-item>
-                            <el-form-item label="访问用户">
+                            <el-form-item label="访问用户:">
                                 <span>{{ props.row.username }}</span>
                             </el-form-item>
-                            <el-form-item label="请求参数">
+                            <el-form-item label="请求参数:">
                                 <span>{{ props.row.params }}</span>
                             </el-form-item>
                         </el-form>

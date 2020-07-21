@@ -56,10 +56,21 @@ export default new Router({
                     meta: { title: '登陆日志' }
                 },
                 {
+                    path: '/project',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/Project.vue'),
+                    meta: { title: '项目管理' }
+                },
+                {
                     path: '/icon',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/Icon.vue'),
                     meta: { title: '自定义图标' }
                 },
+                {
+                    path: '/test',
+                    component: () => import(/* webpackChunkName: "icon" */ '../components/page/Test.vue'),
+                    meta: { title: '测试页面' }
+                },
+
                 {
                     path: '/table',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/BaseTable.vue'),

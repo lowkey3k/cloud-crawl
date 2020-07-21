@@ -40,3 +40,10 @@ export const deleteUser = query => {
         method: 'delete'
     });
 };
+export const deleteByIds = data => {
+    return request({
+        url: '/user/deleteByIds',
+        method: 'delete',
+        data:data
+    });
+};

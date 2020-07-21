@@ -9,17 +9,67 @@
         </div>
         <div class="container">
             <div class="handle-box">
-                <el-button
-                        type="primary"
-                        icon="el-icon-plus"
-                        class="handle-del mr10"
-                        @click="handleAdd"
-                >添加角色
-                </el-button>
-                <el-input v-model="query.f_like_name" placeholder="角色名称" class="handle-input mr10"></el-input>
-                <el-input v-model="query.f_like_sign" placeholder="角色标识" class="handle-input mr10"></el-input>
-                <el-button style="float: right" type="primary" icon="el-icon-search" @click="handleSearch">搜索
-                </el-button>
+
+                <el-form :model="query" :rules="rules" ref="ruleForm" :inline="true">
+                    <el-form-item>
+                        <el-button
+                                type="primary"
+                                icon="el-icon-plus"
+                                class="handle-del mr10"
+                                @click="handleAdd"
+                        >添加角色
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item label="角色名称" prop="f_like_name">
+                        <el-input
+                                v-model="query.f_like_name"
+                                placeholder="请输入角色名称"
+                                clearable
+                                size="small"
+                                style="width: 200px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="角色标识" prop="f_like_sign">
+
+                        <!--keyup.enter.native回车-->
+                        <el-input
+                                v-model="query.f_like_sign"
+                                placeholder="请输入角色标识"
+                                clearable
+                                size="small"
+                                style="width: 200px"
+                                @keyup.enter.native="getData"
+                        ></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="状态" prop="f_eq_status">
+                        <el-select
+                                v-model="query.f_eq_status"
+                                placeholder="角色状态"
+                                clearable
+                                size="small"
+                                style="width: 200px"
+                        >
+                            <el-option
+                                    v-for="dict in statusOptions"
+                                    :key="dict.code"
+                                    :label="dict.name"
+                                    :value="dict.code"
+                            ></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item style="float: right">
+                        <el-button style="float: right" icon="el-icon-refresh" @click="resetForm('ruleForm')">重置
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item style="float: right">
+                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索
+                        </el-button>
+                    </el-form-item>
+
+                </el-form>
             </div>
 
 
@@ -155,18 +205,25 @@
 </template>
 
 <script>
-    import { getRolePage, editRole, addRole, editCheckUnique, deleteRole } from '../../api/role';
-    import { getPermissionByRoleId,roleAddPermission, getPermissionTree } from '../../api/permission';
+    import {getRolePage, editRole, addRole, editCheckUnique, deleteRole} from '../../api/role';
+    import {getPermissionByRoleId, roleAddPermission, getPermissionTree} from '../../api/permission';
+    import {findTreeByPid} from '../../api/datadict';
 
-    import { edit, fetchData } from '../../api/user';
+    import {edit, fetchData} from '../../api/user';
     import service from '../../utils/request';
+    import ElFormItem from "../../../node_modules/element-ui/packages/form/src/form-item.vue";
+    import ElBreadcrumbItem from "../../../node_modules/element-ui/packages/breadcrumb/src/breadcrumb-item.vue";
 
     export default {
 
+        components: {
+            ElBreadcrumbItem,
+            ElFormItem
+        },
         name: 'basetable',
         data() {
             let checkSign = (rule, value, callback) => {
-                service.get('role/checkUnique?name=sign&value=' + this.form.sign).then(function(result) {
+                service.get('role/checkUnique?name=sign&value=' + this.form.sign).then(function (result) {
                     if (result.result) {
                         return callback(new Error('角色已存在'));
                     } else {
@@ -180,7 +237,7 @@
                     name: 'sign',
                     value: this.form.sign
                 };
-                editCheckUnique(param).then(function(result) {
+                editCheckUnique(param).then(function (result) {
                     if (result.result) {
                         return callback(new Error('角色已存在'));
                     } else {
@@ -191,15 +248,12 @@
             };
             return {
                 query: {
-                    // address: '',
-                    name: '',
                     pageNo: 1,
                     pageSize: 10,
-                    f_like_username: '',
-                    f_like_identify: '',
-                    f_like_email: '',
-                    f_eq_sex: '',
-                    f_like_phone: ''
+                    f_like_sign: undefined,
+                    f_like_name: undefined,
+                    f_eq_status: undefined
+
                 },
                 tableData: [],
                 multipleSelection: [],
@@ -218,17 +272,18 @@
                 value: [],
                 data: [],
                 treePermission: [],
+                statusOptions: [],
                 rules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
-                    name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
-                    sign: [{ required: true, message: '请输入角色标识', trigger: 'blur' },
+                    name: [{required: true, message: '请输入角色名称', trigger: 'blur'}],
+                    sign: [{required: true, message: '请输入角色标识', trigger: 'blur'},
                         {
                             validator: checkSign,
                             trigger: 'blur'
                         }]
                 },
                 editRules: {//rules验证通过后this.$refs.login.validate中valid参数返回true
-                    name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
-                    sign: [{ required: true, message: '请输入角色标识', trigger: 'blur' },
+                    name: [{required: true, message: '请输入角色名称', trigger: 'blur'}],
+                    sign: [{required: true, message: '请输入角色标识', trigger: 'blur'},
                         {
                             validator: editCheckSign,
                             trigger: 'blur'
@@ -243,6 +298,7 @@
         },
         created() {
             this.getData();
+            this.getStatusDataDict();
         },
         methods: {
             // 获取 easy-mock 的模拟数据
@@ -250,8 +306,20 @@
                 getRolePage(this.query).then(res => {
                     console.log(res);
                     this.tableData = res.result.records;
-                    this.pageTotal = res.result.total || 50;
+                    this.pageTotal = res.result.total || 0;
                 });
+            },
+            getStatusDataDict() {
+                let param = {f_eq_pid: "1003"};
+                let vm = this;
+                findTreeByPid(param).then(function (res) {
+                    if (res.code === '0') {
+                        vm.statusOptions = res.result;
+                    }
+                })
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
             },
             getCheckedKeys() {
                 return this.$refs.tree.getCheckedKeys();
@@ -273,7 +341,7 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
-                }).then(function() {
+                }).then(function () {
                     let data = {
                         id: row.id,
                         status: row.status
@@ -281,7 +349,7 @@
                     return editRole(data);
                 }).then(() => {
                     this.$message.success(text + '成功');
-                }).catch(function() {
+                }).catch(function () {
                     row.status = row.status === 0 ? 1 : 0;
                 });
 
@@ -301,8 +369,8 @@
                 })
                     .then(() => {
                         let vm = this;
-                        let param = { 'id': row.id };
-                        deleteRole(param).then(function(result) {
+                        let param = {'id': row.id};
+                        deleteRole(param).then(function (result) {
                             if (result.code === '0') {
                                 vm.$message.success('删除成功');
                                 vm.tableData.splice(index, 1);
@@ -317,10 +385,10 @@
             handleEdit(index, row) {
                 this.idx = index;
                 this.form = row;
-                this.id=row.id;
+                this.id = row.id;
                 this.editRoleVisible = true;
                 let vm = this;
-                getPermissionTree(undefined).then(function(res) {
+                getPermissionTree(undefined).then(function (res) {
                     if (res.code === '0') {
                         vm.treePermission = res.result;
                         //选中已经拥有的权限
@@ -331,7 +399,7 @@
             //根据roleId获取已经选中的权限
             getPermissionByRole(roleId) {
                 let vm = this;
-                getPermissionByRoleId(roleId).then(function(res) {
+                getPermissionByRoleId(roleId).then(function (res) {
                     if (res.code === '0') {
                         res.result.forEach((obj, index) => {
                             vm.permissionCheckedKeys.push(obj.id);
@@ -345,7 +413,7 @@
                     if (validate) {
                         this.$set(this.tableData, this.idx, this.form);
                         let vm = this;
-                        let data=[];
+                        let data = [];
                         console.log(this.getCheckedKeys());
                         this.getCheckedKeys().forEach((permissionId, index) => {
                             if (permissionId != null && this.id != null) {
@@ -356,13 +424,13 @@
                             }
                         });
 
-                        roleAddPermission(data).then(function(res) {
-                            if (res.code!=='0'){
+                        roleAddPermission(data).then(function (res) {
+                            if (res.code !== '0') {
                                 vm.$message.error("绑定资源操作失败");
                             }
                         });
 
-                        editRole(this.form).then(function(result) {
+                        editRole(this.form).then(function (result) {
                             if (result.code === '0') {
                                 vm.$message.success(`修改成功`);
                                 vm.editRoleVisible = false;
@@ -385,7 +453,7 @@
                 this.$refs.addForm.validate(validate => {
                     if (validate) {
                         let vm = this;
-                        addRole(this.form).then(function(res) {
+                        addRole(this.form).then(function (res) {
                             if (res.code === '0') {
                                 vm.$message.success('添加成功');
                                 vm.addRoleVisible = false;

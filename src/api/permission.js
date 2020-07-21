@@ -42,7 +42,7 @@ export const addPermission = data => {
 
 export const editCheckUnique = param => {
     return request({
-        url: '/permission/add/checkUnique',
+        url: '/permission/edit/checkUnique',
         method: 'get',
         params: param
     });
